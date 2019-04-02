@@ -13,7 +13,9 @@ range(1,n) n为要爬取的页数
 for page in range(1,4):
     #获取爬取对象
     r1 = requests.get(url, params={'page': page})
+
     r1.encoding = chardet.detect(r1.content)["encoding"]
+
     soup = BeautifulSoup(r1.text, 'html.parser')
     #对第一页的高位玩家信息进行爬取
     if page == 1:

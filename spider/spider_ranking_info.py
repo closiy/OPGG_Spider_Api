@@ -2,22 +2,27 @@ import requests
 import chardet
 from bs4 import BeautifulSoup
 
-fobj = open('ranking.txt', 'w')#文件写入
+# write as .txt
+fobj = open('ranking.txt', 'w')
 
 url = 'http://www.op.gg/ranking/ladder/'
 
 '''
 根据页数爬取玩家的数据
 range(1,n) n为要爬取的页数
+accouding to Page's number to spider summoner's data
+range(1,n) n is total number of while you want to spider
 '''
 for page in range(1,4):
-    #获取爬取对象
+    # 获取爬取对象
+    # get spider obj
     r1 = requests.get(url, params={'page': page})
 
     r1.encoding = chardet.detect(r1.content)["encoding"]
 
     soup = BeautifulSoup(r1.text, 'html.parser')
-    #对第一页的高位玩家信息进行爬取
+    # 对第一页的高位玩家信息进行爬取
+    # to high ranking-score players spider data
     if page == 1:
         '''
         依次爬取
@@ -29,6 +34,16 @@ for page in range(1,4):
         玩家游戏等级
         玩家排位赢场数
         玩家排位输场数
+        
+        spider in order
+        rank
+        sommoner's private website's url
+        sommoner's id
+        sommoner's rank
+        sommoner's ranking-score
+        sommoner's game level
+        win march in rank
+        lose march in rank
         '''
         for content in soup.find_all(name='ul', class_='ranking-highest__list'):
             for summoner in content.find_all(name='li'):
@@ -53,7 +68,7 @@ for page in range(1,4):
                     for lose_times in win_lose.find_all(name='div', class_="winratio-graph__text winratio-graph__text--right"):
                         lose_time_text = ''.join(list(filter(str.isalnum, lose_times.text)))
                     print('{}:{}'.format(win_time_text, lose_time_text))
-                #输出到txt文件
+                # 输出到txt文件
                 fobj.write("{}|{}|{}|{}|{}|{}|{}|{}\n".format(ranking_text, id['href'], id.text, tier_text, lp_text, level_text, win_time_text, lose_time_text))
     #对普通玩家信息爬取
     for content in soup.find_all(name='table', class_='ranking-table'):
@@ -67,6 +82,16 @@ for page in range(1,4):
                 玩家游戏等级
                 玩家排位赢场数
                 玩家排位输场数
+                
+                spider in order
+                rank
+                sommoner's private website's url
+                sommoner's id
+                sommoner's rank
+                sommoner's ranking-score
+                sommoner's game level
+                win march in rank
+                lose march in rank
                 '''
         for summoner in content.find_all(name='tr', class_='ranking-table__row'):
            for ranking in summoner.find_all(name='td', class_='ranking-table__cell ranking-table__cell--rank'):
@@ -93,10 +118,7 @@ for page in range(1,4):
                    lose_time_text = ''.join(list(filter(str.isalnum, lose_times.text)))
                print('{}:{}'.format(win_time_text,lose_time_text))
 
-           fobj.write("{}|{}|{}|{}|{}|{}|{}|{}\n".format(ranking_text, id_url['href'], name.text, tier_text, lp_text, level_text, win_time_text, lose_time_text))
-
-
-
+        fobj.write("{}|{}|{}|{}|{}|{}|{}|{}\n".format(ranking_text, id_url['href'], name.text, tier_text, lp_text, level_text, win_time_text, lose_time_text))
 fobj.close()
 
 # if summoner.find_all(name='td', class='ranking-table__cell ranking-table__cell--rank'):

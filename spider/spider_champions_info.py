@@ -24,10 +24,26 @@ for content in soup.find_all(name='div', class_='champion-index__champion-list')
         a_list = champions.find_all(name='a', attrs={'href':True})
         for a in a_list:
             url = 'https://www.op.gg' + a.attrs['href']
-            mydict={'data-champion-key':champions.attrs['data-champion-key'], 'url':url}
+            # save datas to Collection in champions of demacia_db in localhost
 
-            # mycol.insert_one(mydict)
-            # print(url)
-            print(mydict)
+            champion_key = {'data-champion-key': champions.attrs['data-champion-key']}
+            mydoc = mycol.find_one(champion_key)
+            if mydoc:
+                '''
+                更新数据
+                Update data
+                '''
+                old_query = {'url': mydoc['url']}
+                update_query = {'$set': {'url': url}}
+                print('已更新', end=" ")
+                print(mydoc)
+            else:
+                '''
+                插入数据
+                insert data
+                '''
+                mydict = {'data-champion-key': champions.attrs['data-champion-key'], 'url': url}
+                #mycol.insert_one(mydict)
+                print('已插入', mydict)
 
         # 将获取的数据 存入数据库 或者 保存为 .txt or .json 文件

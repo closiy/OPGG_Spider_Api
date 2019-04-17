@@ -77,7 +77,8 @@ for page in range(1,4):
                     'data_summoner_ranking_lp': lp_text,
                     'data_summoner_ranking_level': level_text,
                     'data_summoner_ranking_win_times': win_time_text,
-                    'data_summoner_ranking_lose_times': lose_time_text
+                    'data_summoner_ranking_lose_times': lose_time_text,
+                    'data_summoner_ranking_winrate': int(win_time_text)/int(lose_time_text)
                 }]
                 fobj.write("{}|{}|{}|{}|{}|{}|{}|{}\n".format(ranking_text, id['href'], id.text, tier_text, lp_text, level_text, win_time_text, lose_time_text))
     # spider player information
@@ -131,7 +132,8 @@ for page in range(1,4):
                 'data_summoner_ranking_lp': lp_text,
                 'data_summoner_ranking_level': level_text,
                 'data_summoner_ranking_win_times': win_time_text,
-                'data_summoner_ranking_lose_times': lose_time_text
+                'data_summoner_ranking_lose_times': lose_time_text,
+                'data_summoner_ranking_winrate': int(win_time_text) / int(lose_time_text)
             }]
            fobj.write("{}|{}|{}|{}|{}|{}|{}|{}\n".format(ranking_text, id_url['href'], name.text, tier_text, lp_text,
                                                          level_text, win_time_text, lose_time_text))

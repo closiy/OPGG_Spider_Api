@@ -62,11 +62,16 @@ def get_champions_ranking_overview(tbody_pos_ranking, mycol, pos_ranking):
         }]
 
     champions_ranking_json = json.dumps(data_champions_ranking_list)
+    system_version = 'windows'
+    if system_version == 'linux':
+        json_file_name = '/home/www/htdocs/wp-content/uploads/' + pos_ranking + '.json'
+        with open(json_file_name, 'w') as json_file_obj:
+            json.dump(data_champions_ranking_list, json_file_obj)
+    else:
+        json_file_name = 'E:/data/' + pos_ranking + '.json'
+        with open(json_file_name, 'w') as json_file_obj:
+            json.dump(data_champions_ranking_list, json_file_obj)
 
-    json_file_name = 'E:/data/' + pos_ranking + '.json'
-    print(json_file_name)
-    with open(json_file_name,'w') as json_file_obj:
-        json.dump(data_champions_ranking_list,json_file_obj)
     # print(champions_ranking_json)
     if mycol.find():
         mycol.drop()

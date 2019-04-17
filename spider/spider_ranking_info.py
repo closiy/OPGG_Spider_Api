@@ -2,6 +2,7 @@ import requests
 import chardet
 from bs4 import BeautifulSoup
 import json
+
 # write as .txt
 fobj = open('ranking.txt', 'w')
 
@@ -36,13 +37,21 @@ for page in range(1,4):
 
         for content in soup.find_all(name='ul', class_='ranking-highest__list'):
             for summoner in content.find_all(name='li'):
+                # summoner ranking number
                 for ranking in summoner.find_all(name='div', class_='ranking-highest__rank'):
                     # save number and alpha, isalnum is save number and alpha, isnumeric is save number
                     ranking_text = ''.join(list(filter(str.isalnum, ranking.text)))
                     print(ranking_text, end=' ')
+                # summoner img url
+                for summoner_img in summoner.find_all(name='img', class_='ranking-highest__image'):
+                    data_summoner_ranking_img = 'http://' + summoner_img['src'].split('//')[1].split('?')[0] + '?image=w_140&v=1'
+                    print(data_summoner_ranking_img, end=' ')
+                # summoner name and url
                 for id in summoner.find_all(name='a', class_='ranking-highest__name'):
-                    print(id['href'], end=' ')
+                    data_summoner_ranking_url = 'https://' + id['href'].split('//')[1]
+                    print(data_summoner_ranking_url, end=' ')
                     print(id.text, end=' ')
+                # summoner tier level , lp and level
                 for tier_info in summoner.find_all(name='div', class_='ranking-highest__tierrank'):
                     for tier in tier_info.find_all(name='span'):
                         tier_text=''.join(list(filter(str.isalnum, tier.text)))
@@ -51,6 +60,7 @@ for page in range(1,4):
                     for level in content.find_all(name='div', class_='ranking-highest__level'):
                         level_text = ''.join(list(filter(str.isnumeric, level.text)))
                     print('{} {} {}'.format(tier_text, lp_text, level_text), end=' ')
+                # summoner win and lose times
                 for win_lose in summoner.find_all(name='div', class_='winratio-graph'):
                     for win_times in win_lose.find_all(name='div', class_="winratio-graph__text winratio-graph__text--left"):
                         win_time_text = ''.join(list(filter(str.isalnum, win_times.text)))
@@ -60,7 +70,8 @@ for page in range(1,4):
                 # output txt file
                 data_summoner_ranking_list += [{
                     'data_summoner_ranking_num': ranking_text,
-                    'data_summoner_ranking_url': id['href'],
+                    'data_summoner_ranking_url': data_summoner_ranking_url,
+                    'data_summoner_ranking_img': data_summoner_ranking_img,
                     'data_summoner_ranking_name': id.text,
                     'data_summoner_ranking_tier': tier_text,
                     'data_summoner_ranking_lp': lp_text,
@@ -88,9 +99,14 @@ for page in range(1,4):
                print(ranking_text,end=' ')
            for id in summoner.find_all(name='td', class_='ranking-table__cell ranking-table__cell--summoner'):
                for id_url in id.find_all(name='a'):
-                   print(id_url['href'], end=' ')
+                   data_summoner_ranking_url = 'https://' + id_url['href'].split('//')[1]
+                   print(data_summoner_ranking_url, end=' ')
+
                for name in id.find_all(name='span'):
                    print(name.text, end=' ')
+               for summoner_img in id.find_all(name='img'):
+                   data_summoner_ranking_img = 'http://' + summoner_img['src'].split('//')[1].split('?')[0] + '?image=w_140&v=1'
+                   print(data_summoner_ranking_img, end=' ')
            for tier in summoner.find_all(name='td', class_='ranking-table__cell ranking-table__cell--tier'):
                tier_text=''.join(list(filter(str.isalnum, tier.text)))
                print(tier_text,end=' ')
@@ -108,7 +124,8 @@ for page in range(1,4):
                print('{}:{}'.format(win_time_text,lose_time_text))
            data_summoner_ranking_list += [{
                 'data_summoner_ranking_num': ranking_text,
-                'data_summoner_ranking_url': id_url['href'],
+                'data_summoner_ranking_url': data_summoner_ranking_url,
+                'data_summoner_ranking_img': data_summoner_ranking_img,
                 'data_summoner_ranking_name': name.text,
                 'data_summoner_ranking_tier': tier_text,
                 'data_summoner_ranking_lp': lp_text,

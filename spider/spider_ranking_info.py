@@ -1,20 +1,18 @@
 import requests
 import chardet
 from bs4 import BeautifulSoup
-
+import json
 # write as .txt
 fobj = open('ranking.txt', 'w')
 
 url = 'http://www.op.gg/ranking/ladder/'
 
 '''
-根据页数爬取玩家的数据
-range(1,n) n为要爬取的页数
-accouding to Page's number to spider summoner's data
+according to Page's number to spider summoner's data
 range(1,n) n is total number of while you want to spider
 '''
+data_summoner_ranking_list = []
 for page in range(1,4):
-    # 获取爬取对象
     # get spider obj
     r1 = requests.get(url, params={'page': page})
 
@@ -25,16 +23,6 @@ for page in range(1,4):
     # to high ranking-score players spider data
     if page == 1:
         '''
-        依次爬取
-        排名
-        玩家个人信息的url
-        玩家的id
-        玩家段位
-        玩家段位分
-        玩家游戏等级
-        玩家排位赢场数
-        玩家排位输场数
-        
         spider in order
         rank
         sommoner's private website's url
@@ -45,11 +33,12 @@ for page in range(1,4):
         win march in rank
         lose march in rank
         '''
+
         for content in soup.find_all(name='ul', class_='ranking-highest__list'):
             for summoner in content.find_all(name='li'):
                 for ranking in summoner.find_all(name='div', class_='ranking-highest__rank'):
-                    #对文本进行仅保留数字和字母 isalnum 是保留数字和字母 isnumeric 是仅保留数字
-                    ranking_text=''.join(list(filter(str.isalnum, ranking.text)))
+                    # save number and alpha, isalnum is save number and alpha, isnumeric is save number
+                    ranking_text = ''.join(list(filter(str.isalnum, ranking.text)))
                     print(ranking_text, end=' ')
                 for id in summoner.find_all(name='a', class_='ranking-highest__name'):
                     print(id['href'], end=' ')
@@ -68,21 +57,21 @@ for page in range(1,4):
                     for lose_times in win_lose.find_all(name='div', class_="winratio-graph__text winratio-graph__text--right"):
                         lose_time_text = ''.join(list(filter(str.isalnum, lose_times.text)))
                     print('{}:{}'.format(win_time_text, lose_time_text))
-                # 输出到txt文件
+                # output txt file
+                data_summoner_ranking_list += [{
+                    'data_summoner_ranking_num': ranking_text,
+                    'data_summoner_ranking_url': id['href'],
+                    'data_summoner_ranking_name': id.text,
+                    'data_summoner_ranking_tier': tier_text,
+                    'data_summoner_ranking_lp': lp_text,
+                    'data_summoner_ranking_level': level_text,
+                    'data_summoner_ranking_win_times': win_time_text,
+                    'data_summoner_ranking_lose_times': lose_time_text
+                }]
                 fobj.write("{}|{}|{}|{}|{}|{}|{}|{}\n".format(ranking_text, id['href'], id.text, tier_text, lp_text, level_text, win_time_text, lose_time_text))
-    #对普通玩家信息爬取
+    # spider player information
     for content in soup.find_all(name='table', class_='ranking-table'):
         '''
-                依次爬取
-                排名
-                玩家个人信息的url
-                玩家的id
-                玩家段位
-                玩家段位分
-                玩家游戏等级
-                玩家排位赢场数
-                玩家排位输场数
-                
                 spider in order
                 rank
                 sommoner's private website's url
@@ -117,9 +106,30 @@ for page in range(1,4):
                for lose_times in win_lose.find_all(name='div', class_="winratio-graph__text winratio-graph__text--right"):
                    lose_time_text = ''.join(list(filter(str.isalnum, lose_times.text)))
                print('{}:{}'.format(win_time_text,lose_time_text))
-
-        fobj.write("{}|{}|{}|{}|{}|{}|{}|{}\n".format(ranking_text, id_url['href'], name.text, tier_text, lp_text, level_text, win_time_text, lose_time_text))
+           data_summoner_ranking_list += [{
+                'data_summoner_ranking_num': ranking_text,
+                'data_summoner_ranking_url': id_url['href'],
+                'data_summoner_ranking_name': name.text,
+                'data_summoner_ranking_tier': tier_text,
+                'data_summoner_ranking_lp': lp_text,
+                'data_summoner_ranking_level': level_text,
+                'data_summoner_ranking_win_times': win_time_text,
+                'data_summoner_ranking_lose_times': lose_time_text
+            }]
+           fobj.write("{}|{}|{}|{}|{}|{}|{}|{}\n".format(ranking_text, id_url['href'], name.text, tier_text, lp_text,
+                                                         level_text, win_time_text, lose_time_text))
 fobj.close()
+
+# save json file by system version
+system_version ='windows'
+if system_version == 'linux':
+    json_file_name = '/home/www/htdocs/wp-content/uploads/summoner_ranking.json'
+    with open(json_file_name, 'w') as json_file_obj:
+        json.dump(data_summoner_ranking_list, json_file_obj)
+else:
+    json_file_name = 'E:/data/summoner_ranking.json'
+    with open(json_file_name, 'w') as json_file_obj:
+        json.dump(data_summoner_ranking_list, json_file_obj)
 
 # if summoner.find_all(name='td', class='ranking-table__cell ranking-table__cell--rank'):
 

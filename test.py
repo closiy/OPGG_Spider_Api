@@ -74,8 +74,81 @@ def get_champions_data(data_champion_pos_url, data_champion_key, mycol):
             'data-champion-anticounter-winrate-' + str(i): data_champion_anticounter_winrate}]
         i += 1
     mycol.update_one(champion_flag, {'$set': {'data-champion-anticounter-list': data_champion_anticounter_list}})
+
+
+    '''
+    get main container of OPGG champion page
+    request: main, item, skill, rune, trend, match up
+    Overview of champion
+    '''
+    main_url = data_champion_pos_url + '#'
+    r3 = requests.get(main_url)
+    r3.encoding = chardet.detect(r3.content)["encoding"]
+    soup3 = BeautifulSoup(r3.text, 'html.parser')
+    main_contain = soup3.find(name='div', attrs=['class', 'tabItem Content championLayout-overview'])
+    recommended_tbody_first = main_contain.find(name='tbody')
+    i = 1
+    data_spell_list = []
+    '''
+    get spell information of overview
+    update spell id, url, win rate, match up to mongodb
+    '''
+    for tr_spells in recommended_tbody_first.find_all(name='tr'):
+        j = 1
+        for li_img in tr_spells.find_all(name='img'):
+            # get summoner spells url and it's name
+            if j == 1:
+                data_spell_url_main = 'https:' + li_img.attrs['src']
+                data_spell_id_main = get_champion_id_from_url(data_spell_url_main)
+            else:
+                data_spell_url_sub = 'https:' + li_img.attrs['src']
+                data_spell_id_sub = get_champion_id_from_url(data_spell_url_sub)
+
+            j += 1
+        j = 1
+        for strong_spells in tr_spells.find_all(name='strong'):
+            # get match up rate and win rate
+            if j == 1:
+                data_spell_matchup = strong_spells.text
+            else:
+                data_spell_winrate = strong_spells.text
+            j += 1
+
+        data_spell_list += [{
+            'data-spell-url-main-' + str(i): data_spell_url_main,
+            'data-spell-id-main-' + str(i): data_spell_id_main,
+            'data-spell-url-sub-' + str(i): data_spell_url_sub,
+            'data-spell-id-sub-' + str(i): data_spell_id_sub,
+            'data-spell-matchup-' + str(i): data_spell_matchup,
+            'data-spell-winrate-' + str(i): data_spell_winrate
+        }]
+        i += 1
+    mycol.update_one(champion_flag, {'$set': {'data-champion-anticounter-list': data_spell_list}})
+
+    '''
+    Recommended Skill Builds
+    '''
+    recommended_skill_builds = main_contain.find(name='table', class_='champion-skill-build__table')
+    data_skill_list = ''
+    for tr_skill in recommended_skill_builds.find_all(name='tr'):
+        for th_skill in tr_skill.find_all(name='td'):
+            for ch in th_skill.text:
+                if ch.isupper():
+                    data_skill_list += ch
+    mycol.update_one(champion_flag, {'$set': {'data-champion-skill-list': data_skill_list}})
+
+
+
+
+    # get main page's data
+
+
+
+
     # output data
+
     print(mycol.find_one(champion_flag))
+
 
 
 

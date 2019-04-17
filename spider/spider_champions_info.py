@@ -15,14 +15,14 @@ def get_champions_data(url, data_champion_key ):
     r2.encoding = chardet.detect(r2.content)["encoding"]
     soup2 = BeautifulSoup(r2.text, 'html.parser')
     '''
-    表头数据处理
+    header static reduce
     '''
     header = soup2.find_all(name='div', attrs=['class', 'l-champion-statistics-header'])
     print(header)
 
     '''
     tabWrap _recognized
-    表中数据处理
+    reduce data static
     
     '''
 
@@ -47,7 +47,7 @@ def pos_changeto_id(pos):
 
 
 if __name__ == '__main__':
-    # 获取英雄的 名称 和 对应爬取网址
+    # get champions name and url
     # connect to mongodb
     myclient = pymongo.MongoClient('mongodb://localhost:27017/')
     mydb = myclient['demacia_db']
@@ -58,7 +58,7 @@ if __name__ == '__main__':
     soup = BeautifulSoup(r1.text, 'html.parser')
     for content in soup.find_all(name='div', class_='champion-index__champion-list'):
         for champions in content.find_all(name='div', attrs={'data-champion-key': True}):
-            # 打印 关键属性 data-champion-key
+            # print key: data-champion-key
 
             # print(champions.attrs['data-champion-key'], end=" ")
             a_list = champions.find_all(name='a', attrs={'href':True})
@@ -75,7 +75,6 @@ if __name__ == '__main__':
                     champion_pos_id = {'data-champion-pos-id': pos_changeto_id(pos.text)}  # champion position ID such as mid
                     champion_pos_url = {'data-champion-pos-url': pos_url}
                     '''
-                    插入数据
                     insert data
                     '''
                     mydict = {'data-champion-key': champions.attrs['data-champion-key'],
@@ -84,12 +83,4 @@ if __name__ == '__main__':
                               'data-champion-pos-url': champion_pos_url['data-champion-pos-url'],
                               }
                     mycol.insert_one(mydict)
-                    print('已插入', mydict)
-                # if mypos:
-                #     print('存在！')
-                # else:
-                #     print('不存在')
-
-
-
-            # 将获取的数据 存入数据库 或者 保存为 .txt or .json 文件
+                    print('insert', mydict)

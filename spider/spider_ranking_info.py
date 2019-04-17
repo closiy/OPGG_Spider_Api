@@ -57,9 +57,11 @@ for page in range(1,4):
                         tier_text=''.join(list(filter(str.isalnum, tier.text)))
                     for lp in tier_info.find_all(name='b'):
                         lp_text=''.join(list(filter(str.isalnum, lp.text)))
-                    for level in content.find_all(name='div', class_='ranking-highest__level'):
-                        level_text = ''.join(list(filter(str.isnumeric, level.text)))
-                    print('{} {} {}'.format(tier_text, lp_text, level_text), end=' ')
+
+                    print('{} {}'.format(tier_text, lp_text), end=' ')
+                for level in summoner.find_all(name='div', class_='ranking-highest__level'):
+                    level_text = ''.join(list(filter(str.isnumeric, level.text)))
+                    print(level_text, end=' ')
                 # summoner win and lose times
                 for win_lose in summoner.find_all(name='div', class_='winratio-graph'):
                     for win_times in win_lose.find_all(name='div', class_="winratio-graph__text winratio-graph__text--left"):
@@ -78,7 +80,7 @@ for page in range(1,4):
                     'data_summoner_ranking_level': level_text,
                     'data_summoner_ranking_win_times': win_time_text,
                     'data_summoner_ranking_lose_times': lose_time_text,
-                    'data_summoner_ranking_winrate': int(win_time_text)/int(lose_time_text)
+                    'data_summoner_ranking_winrate': format(int(win_time_text) / (int(lose_time_text) + int(win_time_text)), '.2f')
                 }]
                 fobj.write("{}|{}|{}|{}|{}|{}|{}|{}\n".format(ranking_text, id['href'], id.text, tier_text, lp_text, level_text, win_time_text, lose_time_text))
     # spider player information
@@ -133,7 +135,7 @@ for page in range(1,4):
                 'data_summoner_ranking_level': level_text,
                 'data_summoner_ranking_win_times': win_time_text,
                 'data_summoner_ranking_lose_times': lose_time_text,
-                'data_summoner_ranking_winrate': int(win_time_text) / int(lose_time_text)
+                'data_summoner_ranking_winrate': format(int(win_time_text) / (int(lose_time_text) + int(win_time_text)), '.2f')
             }]
            fobj.write("{}|{}|{}|{}|{}|{}|{}|{}\n".format(ranking_text, id_url['href'], name.text, tier_text, lp_text,
                                                          level_text, win_time_text, lose_time_text))

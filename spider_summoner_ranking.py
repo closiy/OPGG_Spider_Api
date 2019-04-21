@@ -50,6 +50,7 @@ def get_champions_ranking_overview(tbody_pos_ranking, mycol, pos_ranking):
         # data_champions_ranking_winrate = float(winrate.split('%')[0])
         # pickrate = item.find_next(name='td', class_='champion-index-table__cell champion-index-table__cell--value').text
         # data_champions_ranking_pick = float(pickrate.split('%')[0])
+
         data_champions_ranking_list += [{
             'data_champion_ranking_name': data_champions_ranking_name,
             'data_champion_ranking_num': data_champions_ranking_num,

@@ -12,6 +12,6 @@ if __name__ == '__main__':
     for i in data_champion_list:
         # tmp use to remove duplicates
         if i['data_champion_key'] != tmp:
-            # use module get_single_champion_data's function get_single_champion_mongodb_data to get data to json
+            # use module get_single_champion_data's function get_single_champion_mongodb_data and save as json
             get_single_champion_data.get_single_champion_mongodb_data(i['data_champion_key'])
         tmp = i['data_champion_key']

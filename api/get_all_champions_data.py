@@ -10,6 +10,7 @@ if __name__ == '__main__':
     data_champion_list = mycol.find({'data_champion_key': {'$exists': True}})
     tmp = ''
     for i in data_champion_list:
+        # tmp use to remove duplicates
         if i['data_champion_key'] != tmp:
             # use module get_single_champion_data's function get_single_champion_mongodb_data to get data to json
             get_single_champion_data.get_single_champion_mongodb_data(i['data_champion_key'])

@@ -52,6 +52,7 @@ def get_champions_ranking_overview(tbody_pos_ranking, mycol, pos_ranking):
         # data_champions_ranking_pick = float(pickrate.split('%')[0])
 
         data_champions_ranking_list += [{
+            'data_champion_ranking_id': tmp_champions_name.lower(),
             'data_champion_ranking_name': data_champions_ranking_name,
             'data_champion_ranking_num': data_champions_ranking_num,
             'data_champion_ranking_url': data_champions_ranking_url,

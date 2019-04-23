@@ -1,7 +1,8 @@
+#!/usr/bin/python3
 import requests
 import chardet
 import pymongo
-from spider import spider_single_champion_data
+import spider_single_champion_data
 from bs4 import BeautifulSoup
 
 # split url to get counter champions id

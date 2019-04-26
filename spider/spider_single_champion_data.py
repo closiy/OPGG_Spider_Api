@@ -42,7 +42,10 @@ def get_champions_data(data_champion_pos_url, data_champion_key, mycol):
     # get and update tier of champion
     div_tier = header.find(name='div', class_='champion-stats-header-info__tier')
     champion_tier = div_tier.find(name='b')
-    data_champion_tier = champion_tier.text
+    if champion_tier == None:
+        data_champion_tier = 'No Tier'
+    else:
+        data_champion_tier = champion_tier.text
     mycol.update_one(champion_flag, {'$set': {'data_champion_tier': data_champion_tier}})
 
     # get and update counter champion
@@ -54,9 +57,9 @@ def get_champions_data(data_champion_pos_url, data_champion_key, mycol):
         data_champion_counter_winrate = tr_counter.find(name='b').text
         data_champion_counter_id = get_champion_id_from_url(data_champion_counter_url)
         data_champion_counter_list += [{
-            'data_champion_counter_id' + str(i): data_champion_counter_id,
-            'data_champion_counter_url_' + str(i): data_champion_counter_url,
-            'data_champion_counter_winrate_' + str(i): data_champion_counter_winrate}]
+            'data_champion_counter_id': data_champion_counter_id,
+            'data_champion_counter_url_': data_champion_counter_url,
+            'data_champion_counter_winrate_': data_champion_counter_winrate}]
         i += 1
     mycol.update_one(champion_flag, {'$set': {'data_champion_counter_list': data_champion_counter_list}})
 
@@ -70,9 +73,9 @@ def get_champions_data(data_champion_pos_url, data_champion_key, mycol):
         data_champion_anticounter_winrate = tr_anticounter.find(name='b').text
         data_champion_anticounter_id = get_champion_id_from_url(data_champion_anticounter_url)
         data_champion_anticounter_list += [{
-            'data_champion_anticounter_id' + str(i): data_champion_anticounter_id,
-            'data_champion_anticounter_url_' + str(i): data_champion_anticounter_url,
-            'data_champion_anticounter_winrate_' + str(i): data_champion_anticounter_winrate}]
+            'data_champion_anticounter_id': data_champion_anticounter_id,
+            'data_champion_anticounter_url_': data_champion_anticounter_url,
+            'data_champion_anticounter_winrate_': data_champion_anticounter_winrate}]
         i += 1
     mycol.update_one(champion_flag, {'$set': {'data_champion_anticounter_list': data_champion_anticounter_list}})
 
@@ -116,15 +119,15 @@ def get_champions_data(data_champion_pos_url, data_champion_key, mycol):
             j += 1
 
         data_spell_list += [{
-            'data_spell_url_main_' + str(i): data_spell_url_main,
-            'data_spell_id_main_' + str(i): data_spell_id_main,
-            'data_spell_url_sub_' + str(i): data_spell_url_sub,
-            'data_spell_id_sub_' + str(i): data_spell_id_sub,
-            'data_spell_matchup_' + str(i): data_spell_matchup,
-            'data_spell_winrate_' + str(i): data_spell_winrate
+            'data_spell_url_main_': data_spell_url_main,
+            'data_spell_id_main_': data_spell_id_main,
+            'data_spell_url_sub_': data_spell_url_sub,
+            'data_spell_id_sub_': data_spell_id_sub,
+            'data_spell_matchup_': data_spell_matchup,
+            'data_spell_winrate_': data_spell_winrate
         }]
         i += 1
-    mycol.update_one(champion_flag, {'$set': {'data_champion_anticounter_list': data_spell_list}})
+    mycol.update_one(champion_flag, {'$set': {'data_champion_spell_list': data_spell_list}})
 
     '''
     Recommended Skill Builds
@@ -213,11 +216,10 @@ def get_champions_data(data_champion_pos_url, data_champion_key, mycol):
                 for div_rune_img in perk_page.find_all(name='div', class_=['perk-page__item  ', 'perk-page__item--active']):
                     data_champion_rune_img = 'https:' + div_rune_img.find(name='img')['src']
                     tmp_list += [data_champion_rune_img]
-
                 if flag_p == 1:
-                    perk_rune_list_main = [{'data_champion_rune_img_main': tmp_list}]
+                    perk_rune_list_main = [{'data_champion_rune_img_main': tmp_list[0: 5]}]
                 elif flag_p == 2:
-                    perk_rune_list_sub = [{'data_champion_rune_img_sub': tmp_list}]
+                    perk_rune_list_sub = [{'data_champion_rune_img_sub': tmp_list[5: 8]}]
                 # elif flag_p ==3:
                 #     data_rune_list += [{'data_champion_rune_img_fra': tmp_list}]
                 flag_p += 1
@@ -240,6 +242,7 @@ def get_champions_data(data_champion_pos_url, data_champion_key, mycol):
                 'fra': fra_rune_list,
                 'rate': data_rune_rate_list
             }]
+            print(data_rune_list)
     # data_rune_list_json = json.dumps(data_rune_list)
     # print(data_rune_list)
     mycol.update_one(champion_flag, {'$set': {'data_champion_rune_list': data_rune_list}})
@@ -296,5 +299,5 @@ if __name__ == '__main__':
 
     # test data of 'neeko'
     data_champion_key = 'aatrox'
-    data_champion_pos_url = 'https://www.op.gg/champion/ekko/statistics/mid'
+    data_champion_pos_url = 'https://www.op.gg/champion/renekton/statistics/mid'
     get_champions_data(data_champion_pos_url, data_champion_key, mycol)

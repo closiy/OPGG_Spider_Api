@@ -1,5 +1,6 @@
 import requests
 import chardet
+import pymongo
 from bs4 import BeautifulSoup
 import json
 
@@ -141,6 +142,17 @@ for page in range(1,4):
                                                          level_text, win_time_text, lose_time_text))
 fobj.close()
 
+# connect to local mongodb
+myclient = pymongo.MongoClient('mongodb://localhost:27017/')
+mydb = myclient['demacia_db']
+mycol = mydb['summoner_ranking']
+if mycol.find():
+    mycol.drop()
+    mycol.insert(data_summoner_ranking_list)
+    print('update success!')
+else:
+    mycol.insert(data_summoner_ranking_list)
+    print("insert success!")
 # save json file by system version
 system_version ='windows'
 if system_version == 'linux':
